@@ -6,26 +6,31 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Chip,
 } from "@material-ui/core";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import WellcomeMessage from "./WellcomeMessage";
-import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles"
+import { ProgressContext } from "./context/ProgressContext";
+import { ThemeContext } from "./context/ThemeContext";
+import ToggoleThemeBtn from "./ToggoleThemeBtn";
 
-const useStyle = makeStyles((theme: Theme) => createStyles ({
-    positionSelect: {
-        color:'white',
-        borderBottom: '1px solid white'
-    }
+const useStyle = makeStyles((theme: Theme) => createStyles({
+  positionSelect: {
+    color: 'white',
+    borderBottom: '1px solid white'
+  }
 }))
 
 const Navbar = () => {
   const [position, setPosition] = useState<string>("Full-stack Developer");
-  const [time, setTime] = useState<Date>(() =>new Date(Date.now()));
-
+  const [time, setTime] = useState<Date>(() => new Date(Date.now()));
+  const { lastTime, status } = useContext(ProgressContext)
+  const { theme } = useContext(ThemeContext)
   useEffect(() => {
-      const timer = setInterval(() =>setTime(() => new Date(Date.now())))
-      return () => clearInterval(timer) 
-  },[])
+    const timer = setInterval(() => setTime(() => new Date(Date.now())))
+    return () => clearInterval(timer)
+  }, [])
 
   const classes = useStyle()
   const onPositionCHange = (
@@ -36,7 +41,7 @@ const Navbar = () => {
     setPosition(event.target.value as string);
   };
   return (
-    <AppBar position="static" color="primary">
+    <AppBar position="static" color={theme}>
       <Toolbar>
         <Box
           display="flex"
@@ -48,6 +53,7 @@ const Navbar = () => {
           <Typography variant="h6">My movies</Typography>
           <Box textAlign="center">
             <WellcomeMessage position={position} country="Ha noi" />
+            <Chip label={`Last time working in this project :${lastTime} - status: ${status}`}></Chip>
             <Box>
               <FormControl>
                 <Select value={position} onChange={onPositionCHange} className={classes.positionSelect} >
@@ -65,14 +71,15 @@ const Navbar = () => {
             </Box>
           </Box>
           <Box textAlign='center'>
-              <Box my={1}>
-                  <Typography variant='h6'>
-                      {time.toUTCString()}
-                  </Typography>
-              </Box>
+            <Box my={1}>
+              <Typography variant='h6'>
+                {time.toUTCString()}
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Toolbar>
+      <ToggoleThemeBtn></ToggoleThemeBtn>
     </AppBar>
   );
 };
